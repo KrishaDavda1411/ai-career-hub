@@ -1,0 +1,634 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="A curated daily AI news briefing with ready-to-post LinkedIn and X drafts."
+    />
+    <title>Signal AI — News worth sharing</title>
+    <link rel="stylesheet" href="vendor/codemirror/lib/codemirror.min.css" />
+    <link rel="stylesheet" href="vendor/codemirror/theme/material-darker.min.css" />
+    <link rel="stylesheet" href="vendor/codemirror/addon/hint/show-hint.min.css" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <a class="brand" href="#" aria-label="Signal AI home">
+            <span class="brand-mark" aria-hidden="true">
+              <svg viewBox="0 0 32 32" fill="none">
+                <path d="M9 22.5 16 5l7 17.5-7-3.8-7 3.8Z" fill="currentColor" />
+                <path d="M5.5 26.5 16 21l10.5 5.5" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" />
+              </svg>
+            </span>
+            <span>signal<span class="brand-dot">.</span>ai</span>
+          </a>
+          <button class="sidebar-close" id="sidebar-close" aria-label="Close sidebar" title="Close sidebar">‹</button>
+        </div>
+
+        <nav class="nav-list" aria-label="Main navigation">
+          <button class="nav-item active" data-view="briefing">
+            <span class="nav-icon">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4h13A1.5 1.5 0 0 1 20 5.5v13a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5v-13Z" stroke="currentColor" stroke-width="1.8"/><path d="M8 9h8M8 13h8M8 17h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </span>
+            Daily briefing
+          </button>
+          <button class="nav-item" data-view="saved">
+            <span class="nav-icon">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M6.5 5.5A1.5 1.5 0 0 1 8 4h8a1.5 1.5 0 0 1 1.5 1.5V20L12 16.5 6.5 20V5.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+            </span>
+            Saved stories
+            <span class="nav-count" id="saved-count">0</span>
+          </button>
+          <button class="nav-item" data-view="jobs">
+            <span class="nav-icon">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M8 7V5.8A1.8 1.8 0 0 1 9.8 4h4.4A1.8 1.8 0 0 1 16 5.8V7M5.5 7h13A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5v-9A1.5 1.5 0 0 1 5.5 7Z" stroke="currentColor" stroke-width="1.8"/><path d="M4 12h16M10 12v2h4v-2" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+            </span>
+            Matched jobs
+            <span class="live-dot" aria-label="Live"></span>
+          </button>
+          <button class="nav-item" data-view="dsa">
+            <span class="nav-icon">
+              <svg viewBox="0 0 24 24" fill="none"><path d="m8.5 8-4 4 4 4M15.5 8l4 4-4 4M13.5 5 10.5 19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+            DSA practice
+            <span class="new-nav-badge">New</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-bottom">
+          <div class="streak-card">
+            <span class="streak-icon">✦</span>
+            <p class="streak-title">Stay visible</p>
+            <p class="streak-copy">You’re one smart post away from starting a conversation.</p>
+            <div class="streak-days">
+              <span class="done">M</span><span class="done">T</span><span class="done">W</span>
+              <span class="current">T</span><span>F</span><span>S</span><span>S</span>
+            </div>
+          </div>
+          <div class="profile">
+            <div class="avatar">KD</div>
+            <div>
+              <strong>Krisha’s workspace</strong>
+              <span>Resume matched</span>
+            </div>
+            <button aria-label="Workspace menu">•••</button>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <button class="mobile-menu" id="mobile-menu" aria-label="Toggle sidebar" title="Toggle sidebar">
+            <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+          </button>
+          <div class="search-wrap">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" /><path d="m16 16 4 4" /></svg>
+            <input id="search-input" type="search" placeholder="Search today’s AI news" aria-label="Search news" />
+            <span class="shortcut">⌘ K</span>
+          </div>
+          <div class="top-actions">
+            <span class="last-updated"><i></i> Updated Aug 29</span>
+            <button class="icon-button" id="theme-toggle" aria-label="Toggle theme">
+              <svg class="sun-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+            </button>
+          </div>
+        </header>
+
+        <div class="content-wrap page-view" id="briefing-view">
+          <section class="page-heading">
+            <div>
+              <p class="eyebrow">Saturday, August 29</p>
+              <h1>Your AI signal,<br /><em>minus the noise.</em></h1>
+            </div>
+            <p class="heading-note">Fresh stories, clear context, and posts you can make your own — curated for busy builders.</p>
+          </section>
+
+          <section class="spotlight" id="spotlight">
+            <div class="spotlight-visual">
+              <div class="orb orb-one"></div>
+              <div class="orb orb-two"></div>
+              <div class="grid-lines"></div>
+              <div class="signal-wave">
+                <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+              </div>
+              <div class="spotlight-badge"><span>01</span> Top signal</div>
+            </div>
+            <div class="spotlight-content">
+              <div class="story-meta">
+                <span class="source-badge source-techcrunch">TC</span>
+                <span>TechCrunch</span>
+                <i></i>
+                <span>Aug 28, 2026</span>
+                <span class="trend-tag">Trending</span>
+              </div>
+              <h2>Open-weight AI companies are becoming Silicon Valley’s hottest acquisition targets</h2>
+              <p>Reported deal activity around Hugging Face is putting a spotlight on the strategic value of open models, distribution, and inference infrastructure.</p>
+              <div class="why-box">
+                <span>Why it matters</span>
+                <p>The next AI land grab may be less about training the biggest model — and more about owning the ecosystem where models are shared, tuned, and deployed.</p>
+              </div>
+              <div class="card-actions">
+                <button class="primary-button create-post" data-id="open-weight">
+                  Create a post
+                  <svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+                </button>
+                <a class="text-link" href="https://techcrunch.com/2026/08/28/open-weight-ai-companies-are-the-valleys-hottest-acquisition-targets/" target="_blank" rel="noreferrer">Read source ↗</a>
+                <button class="bookmark-button" data-id="open-weight" aria-label="Save story">
+                  <svg viewBox="0 0 24 24"><path d="M6.5 5.5A1.5 1.5 0 0 1 8 4h8a1.5 1.5 0 0 1 1.5 1.5V20L12 16.5 6.5 20V5.5Z"/></svg>
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <section class="feed-section">
+            <div class="feed-header">
+              <div>
+                <p class="section-kicker">The briefing</p>
+                <h2>What’s moving in AI</h2>
+              </div>
+              <div class="filter-pills" role="group" aria-label="Filter stories">
+                <button class="filter-pill active" data-filter="all">All</button>
+                <button class="filter-pill" data-filter="models">Models</button>
+                <button class="filter-pill" data-filter="business">Business</button>
+                <button class="filter-pill" data-filter="research">Research</button>
+                <button class="filter-pill" data-filter="policy">Policy</button>
+              </div>
+            </div>
+
+            <div class="news-grid" id="news-grid"></div>
+            <div class="empty-state hidden" id="empty-state">
+              <span>⌕</span>
+              <h3>No signals found</h3>
+              <p>Try a different search or topic.</p>
+            </div>
+          </section>
+
+          <footer class="site-footer">
+            <p>Curated for context. Always read the source before you post.</p>
+            <span>6 stories · Updated August 29, 2026</span>
+          </footer>
+        </div>
+
+        <div class="content-wrap page-view hidden" id="jobs-view">
+          <section class="jobs-heading">
+            <div>
+              <p class="eyebrow">Resume-powered search</p>
+              <h1>Fresh roles,<br /><em>matched to you.</em></h1>
+            </div>
+            <div class="freshness-card">
+              <span class="freshness-pulse"></span>
+              <div>
+                <strong>24-hour filter is on</strong>
+                <p>Only roles published in the last day are considered.</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="match-summary">
+            <div class="resume-identity">
+              <div class="resume-avatar">KD</div>
+              <div>
+                <span>Matched using</span>
+                <h2>Krisha Davda’s resume</h2>
+                <p>Software Engineer · 3 years experience</p>
+              </div>
+              <span class="resume-ready"><i></i> Resume ready</span>
+            </div>
+            <div class="resume-skills">
+              <span>Java + Spring Boot</span>
+              <span>Python</span>
+              <span>React / Angular</span>
+              <span>AWS + Kubernetes</span>
+              <span>PostgreSQL + Redis</span>
+              <span>AI / ML</span>
+            </div>
+          </section>
+
+          <section class="jobs-section">
+            <div class="jobs-toolbar">
+              <div>
+                <p class="section-kicker">Your shortlist</p>
+                <h2><span id="job-count">—</span> strong matches found</h2>
+              </div>
+              <div class="job-toolbar-actions">
+                <div class="filter-pills job-filters" role="group" aria-label="Filter jobs">
+                  <button class="job-filter active" data-job-filter="all">All matches</button>
+                  <button class="job-filter" data-job-filter="best">Best match</button>
+                  <button class="job-filter" data-job-filter="mid">Entry / Mid</button>
+                </div>
+                <button class="refresh-jobs" id="refresh-jobs">
+                  <svg viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M6.1 9a7 7 0 0 1 11.7-2.2L20 9M4 15l2.2 2.2A7 7 0 0 0 17.9 15"/></svg>
+                  Refresh
+                </button>
+              </div>
+            </div>
+
+            <div class="jobs-layout">
+              <div>
+                <div class="job-list" id="job-list">
+                  <div class="job-loading">
+                    <span></span>
+                    <p>Scanning fresh roles against your resume…</p>
+                  </div>
+                </div>
+                <div class="job-empty hidden" id="job-empty">
+                  <span>24h</span>
+                  <h3>No strong matches right now</h3>
+                  <p>That means the filter is working. Refresh later for newly posted roles.</p>
+                </div>
+              </div>
+
+              <aside class="match-profile">
+                <div class="match-profile-header">
+                  <span>Match profile</span>
+                  <strong>From your resume</strong>
+                </div>
+                <div class="profile-stat">
+                  <strong>3 yrs</strong>
+                  <span>Software engineering</span>
+                </div>
+                <div class="profile-stat">
+                  <strong>20K+</strong>
+                  <span>Servers managed</span>
+                </div>
+                <div class="profile-stat">
+                  <strong>94%</strong>
+                  <span>ML intent accuracy</span>
+                </div>
+                <div class="target-roles">
+                  <span>Prioritizing</span>
+                  <ul>
+                    <li>Backend Engineer</li>
+                    <li>Full-Stack Engineer</li>
+                    <li>Platform / Cloud Engineer</li>
+                    <li>Applied AI Engineer</li>
+                  </ul>
+                </div>
+                <div class="privacy-note">
+                  <svg viewBox="0 0 24 24"><path d="M7 10V7a5 5 0 0 1 10 0v3M6 10h12a1 1 0 0 1 1 1v8H5v-8a1 1 0 0 1 1-1Z"/></svg>
+                  <p>Your resume stays local. Job descriptions are scored in your browser.</p>
+                </div>
+              </aside>
+            </div>
+          </section>
+
+          <footer class="site-footer">
+            <p>Jobs supplied by <a href="https://jobicy.com/" target="_blank" rel="noreferrer">Jobicy ↗</a>. Always verify details before applying.</p>
+            <span id="jobs-updated">Checking for fresh roles…</span>
+          </footer>
+        </div>
+
+        <div class="content-wrap page-view hidden" id="dsa-view">
+          <section class="dsa-heading">
+            <div>
+              <p class="eyebrow">FAANG interview lab</p>
+              <h1>Train the pattern,<br /><em>not the answer.</em></h1>
+            </div>
+            <div class="practice-stats">
+              <div>
+                <strong id="practiced-count">0</strong>
+                <span>Problems practiced</span>
+              </div>
+              <i></i>
+              <div>
+                <strong>15</strong>
+                <span>Core patterns</span>
+              </div>
+              <button id="random-question-top">
+                <svg viewBox="0 0 24 24"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>
+                Random question
+              </button>
+              <button class="history-button" id="open-submissions">
+                <svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 3-6.2M4 4v5h5M12 8v5l3 2"/></svg>
+                History
+                <b id="submission-count">0</b>
+              </button>
+            </div>
+          </section>
+
+          <section class="dsa-filter-row">
+            <div class="pattern-filters" role="group" aria-label="Filter DSA topics">
+              <button class="pattern-filter active" data-pattern="all">All patterns</button>
+              <button class="pattern-filter" data-pattern="arrays">Arrays</button>
+              <button class="pattern-filter" data-pattern="trees">Trees</button>
+              <button class="pattern-filter" data-pattern="graphs">Graphs</button>
+              <button class="pattern-filter" data-pattern="dynamic-programming">Dynamic programming</button>
+            </div>
+            <div class="difficulty-key">
+              <span><i class="easy-dot"></i> Easy</span>
+              <span><i class="medium-dot"></i> Medium</span>
+              <span><i class="hard-dot"></i> Hard</span>
+            </div>
+          </section>
+
+          <section class="practice-workspace">
+            <article class="question-panel">
+              <div class="question-toolbar">
+                <div class="question-number">Question <span id="question-position">01</span></div>
+                <button id="random-question" aria-label="Get another random question">
+                  <svg viewBox="0 0 24 24"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>
+                </button>
+              </div>
+              <div class="question-labels">
+                <span class="difficulty-badge medium" id="question-difficulty">Medium</span>
+                <span class="topic-badge" id="question-topic">Array · Hash Map</span>
+                <span class="frequency-badge">High frequency</span>
+              </div>
+              <h2 id="question-title">Two Sum</h2>
+              <p class="question-description" id="question-description"></p>
+
+              <div class="contract-block">
+                <span>Function contract</span>
+                <code id="question-contract"></code>
+                <p>Complete the provided function and return the requested value. Do not read from standard input or print the answer.</p>
+              </div>
+
+              <div class="example-block">
+                <span>Example 1</span>
+                <pre id="question-example"></pre>
+              </div>
+
+              <div class="constraints-block">
+                <span>Constraints</span>
+                <ul id="question-constraints"></ul>
+              </div>
+
+              <div class="interview-focus">
+                <span>✦</span>
+                <div>
+                  <strong>What the interviewer is testing</strong>
+                  <p id="interview-focus"></p>
+                </div>
+              </div>
+
+              <button class="hint-button" id="hint-button">
+                <svg viewBox="0 0 24 24"><path d="M9 18h6M10 22h4M8.5 14.5A6 6 0 1 1 15.5 14.5c-.9.7-1.5 1.5-1.5 2.5h-4c0-1-.6-1.8-1.5-2.5Z"/></svg>
+                <span>Show one hint</span>
+              </button>
+              <p class="question-hint hidden" id="question-hint"></p>
+            </article>
+
+            <div class="coding-panel">
+              <div class="interview-launch" id="interview-launch">
+                <div class="launch-icon">⌁</div>
+                <p class="section-kicker">Mock interview</p>
+                <h3>Ready when you are.</h3>
+                <p>You’ll have 45 minutes. Explain your thinking, ask clarifying questions, code, and test before submitting.</p>
+                <div class="launch-rules">
+                  <span>🎙 Think aloud</span>
+                  <span>💡 Hints only when asked</span>
+                  <span>🔒 Feedback after submission</span>
+                </div>
+                <button class="start-interview-button" id="start-interview">Start mock interview</button>
+                <button class="practice-only-button" id="practice-only">Practice without timer</button>
+              </div>
+
+              <div class="interview-progress">
+                <div class="phase-steps" id="phase-steps">
+                  <span class="active" data-phase="understand"><b>1</b> Understand</span>
+                  <i></i>
+                  <span data-phase="plan"><b>2</b> Plan</span>
+                  <i></i>
+                  <span data-phase="code"><b>3</b> Code</span>
+                  <i></i>
+                  <span data-phase="test"><b>4</b> Test</span>
+                </div>
+                <span class="session-status" id="session-status"><i></i> Not started</span>
+              </div>
+
+              <div class="editor-topbar">
+                <div class="editor-language">
+                  <span>Language</span>
+                  <select id="code-language" aria-label="Programming language">
+                    <option value="python">Python</option>
+                    <option value="java">Java</option>
+                    <option value="javascript">JavaScript</option>
+                  </select>
+                </div>
+                <button class="focus-editor-button" id="editor-fullscreen" aria-label="Toggle full screen editor">
+                  <svg viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>
+                  Focus editor
+                </button>
+                <div class="interview-timer" id="interview-timer">
+                  <svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M9 2h6M12 5v3M12 13l3-2"/></svg>
+                  <strong id="timer-display">45:00</strong>
+                  <button id="timer-toggle">Start</button>
+                  <button id="timer-reset" aria-label="Reset timer">↺</button>
+                </div>
+              </div>
+
+              <div class="code-editor-wrap">
+                <div class="code-editor-label">
+                  <div class="file-tab">
+                    <i></i>
+                    <span id="editor-filename">solution.py</span>
+                    <b>×</b>
+                  </div>
+                  <span id="code-lines">6 lines</span>
+                </div>
+                <div class="editor-body">
+                  <textarea id="code-editor" wrap="off" spellcheck="false" aria-label="Solution code editor"></textarea>
+                </div>
+                <div class="editor-statusbar">
+                  <span id="cursor-position">Ln 1, Col 1</span>
+                  <div>
+                    <span>Spaces: 4</span>
+                    <span>UTF-8</span>
+                    <span id="language-status">Python</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="editor-actions">
+                <button class="secondary-action" id="reset-code">Reset code</button>
+                <button class="test-action" id="run-tests">
+                  <svg viewBox="0 0 24 24"><path d="m9 8 8 4-8 4V8Z"/><circle cx="12" cy="12" r="9"/></svg>
+                  <span>Run code</span>
+                </button>
+                <button class="analyze-button" id="analyze-solution">
+                  <span class="bot-spark">✦</span>
+                  Submit & review
+                  <svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+                </button>
+              </div>
+
+              <div class="interviewer-panel">
+                <div class="interviewer-header">
+                  <div class="interviewer-avatar">AI</div>
+                  <div>
+                    <span>Interviewer</span>
+                    <strong id="interviewer-state">Waiting to begin</strong>
+                  </div>
+                  <span class="interviewer-live"><i></i> Live</span>
+                </div>
+                <div class="interview-messages" id="interview-messages">
+                  <div class="interview-message bot">
+                    <span>AI</span>
+                    <p>Start the session when you’re ready. I’ll answer clarifying questions, but I won’t reveal the approach unless you ask for a hint.</p>
+                  </div>
+                </div>
+                <div class="interviewer-prompts">
+                  <span>Ask interviewer</span>
+                  <button data-interview-prompt="clarify">Clarify constraints</button>
+                  <button data-interview-prompt="edge">Discuss edge cases</button>
+                  <button data-interview-prompt="hint">Request a hint</button>
+                </div>
+              </div>
+
+              <div class="test-results hidden" id="test-results">
+                <div class="test-results-header">
+                  <div>
+                    <span>Execution results</span>
+                    <strong id="test-results-title">Running test cases</strong>
+                  </div>
+                  <small>Code executes in the Judge0 sandbox.</small>
+                </div>
+                <div class="test-case-list" id="test-case-list"></div>
+              </div>
+
+              <div class="analysis-placeholder" id="analysis-placeholder">
+                <div class="bot-avatar">🔒</div>
+                <div>
+                  <strong>Post-interview feedback is locked</strong>
+                  <p>Submit your solution when you’re finished. Then the bot will estimate time and space complexity and compare it with the optimal pattern.</p>
+                </div>
+              </div>
+
+              <div class="analysis-panel hidden" id="analysis-panel">
+                <div class="analysis-header">
+                  <div class="bot-avatar">✦</div>
+                  <div>
+                    <span>Complexity Bot</span>
+                    <h3 id="analysis-verdict">Your analysis</h3>
+                  </div>
+                  <span class="analysis-confidence">Pattern estimate</span>
+                </div>
+
+                <div class="complexity-grid">
+                  <div class="complexity-card">
+                    <span>Estimated time</span>
+                    <strong id="estimated-time">O(n)</strong>
+                    <small id="time-comparison">Matches target</small>
+                  </div>
+                  <div class="complexity-card">
+                    <span>Estimated space</span>
+                    <strong id="estimated-space">O(n)</strong>
+                    <small id="space-comparison">Matches target</small>
+                  </div>
+                  <div class="complexity-card target">
+                    <span>Optimal target</span>
+                    <strong id="optimal-target">O(n) · O(n)</strong>
+                    <small id="optimal-pattern">Hash map</small>
+                  </div>
+                </div>
+
+                <div class="analysis-copy">
+                  <span>Bot analysis</span>
+                  <p id="analysis-summary"></p>
+                  <ul id="analysis-feedback"></ul>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <footer class="site-footer">
+            <p>Question set focuses on recurring interview patterns rather than memorized solutions.</p>
+            <span>Your code and progress stay in this browser.</span>
+          </footer>
+        </div>
+      </main>
+    </div>
+
+    <div class="drawer-backdrop" id="drawer-backdrop"></div>
+    <aside class="post-drawer" id="post-drawer" aria-hidden="true">
+      <div class="drawer-header">
+        <div>
+          <p class="section-kicker">Post studio</p>
+          <h2>Make it yours</h2>
+        </div>
+        <button class="close-drawer" id="close-drawer" aria-label="Close post studio">×</button>
+      </div>
+
+      <div class="drawer-story" id="drawer-story"></div>
+
+      <div class="platform-tabs" role="tablist">
+        <button class="platform-tab active" data-platform="linkedin" role="tab">
+          <span class="linkedin-logo">in</span> LinkedIn
+        </button>
+        <button class="platform-tab" data-platform="x" role="tab">
+          <span class="x-logo">𝕏</span> X / Twitter
+        </button>
+      </div>
+
+      <div class="tone-row">
+        <span>Tone</span>
+        <div class="tone-options">
+          <button class="tone-button active" data-tone="insightful">Insightful</button>
+          <button class="tone-button" data-tone="bold">Bold</button>
+          <button class="tone-button" data-tone="concise">Concise</button>
+        </div>
+      </div>
+
+      <div class="editor-wrap">
+        <textarea id="post-editor" aria-label="Post draft"></textarea>
+        <div class="editor-footer">
+          <span id="character-count">0 characters</span>
+          <button id="regenerate-button">
+            <svg viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M6.1 9a7 7 0 0 1 11.7-2.2L20 9M4 15l2.2 2.2A7 7 0 0 0 17.9 15"/></svg>
+            Regenerate
+          </button>
+        </div>
+      </div>
+
+      <div class="post-tip">
+        <span>✦</span>
+        <p><strong>Make it personal.</strong> Add one sentence about how this connects to your work or what you think happens next.</p>
+      </div>
+
+      <button class="copy-button" id="copy-button">
+        <svg viewBox="0 0 24 24"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>
+        <span>Copy LinkedIn post</span>
+      </button>
+      <p class="drawer-disclaimer">Draft generated from the story summary. Verify facts with the linked source.</p>
+    </aside>
+
+    <div class="submission-backdrop" id="submission-backdrop"></div>
+    <aside class="submission-drawer" id="submission-drawer" aria-hidden="true">
+      <div class="drawer-header">
+        <div>
+          <p class="section-kicker">Practice archive</p>
+          <h2>Your submissions</h2>
+        </div>
+        <button class="close-drawer" id="close-submissions" aria-label="Close submissions">×</button>
+      </div>
+      <p class="submission-intro">Reopen any submitted solution with its code, complexity estimate, and feedback.</p>
+      <div class="submission-list" id="submission-list"></div>
+      <div class="submission-empty hidden" id="submission-empty">
+        <span>⌁</span>
+        <h3>No submissions yet</h3>
+        <p>Finish a mock interview and submit your solution to save it here.</p>
+      </div>
+    </aside>
+
+    <div class="toast" id="toast" role="status">
+      <span>✓</span>
+      <p>Copied to clipboard</p>
+    </div>
+
+    <script src="vendor/codemirror/lib/codemirror.min.js"></script>
+    <script src="vendor/codemirror/mode/python/python.min.js"></script>
+    <script src="vendor/codemirror/mode/clike/clike.min.js"></script>
+    <script src="vendor/codemirror/mode/javascript/javascript.min.js"></script>
+    <script src="vendor/codemirror/addon/edit/closebrackets.min.js"></script>
+    <script src="vendor/codemirror/addon/edit/matchbrackets.min.js"></script>
+    <script src="vendor/codemirror/addon/hint/show-hint.min.js"></script>
+    <script src="vendor/codemirror/addon/hint/anyword-hint.min.js"></script>
+    <script src="app.js"></script>
+    <script src="dsa-runner.js"></script>
+    <script src="dsa.js"></script>
+  </body>
+</html>
